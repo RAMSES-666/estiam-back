@@ -31,14 +31,19 @@ class ApiController extends AbstractController
      * @return Response
      * @api
      */    
-    #[Route('/production', name: 'energie_all', methods:['GET'])]
+    #[Route('/production', name: 'energie_all', methods:['GET'])] #tout afficher
     public function all(): Response
     {
         $production = $this->documentManager->getRepository(Production::class)->findAll();
-        return $this->json($production);
+
+        if ($production) {
+            return $this->json($production);
+        } else {
+            return $this->json(["error" => "Not found"], 404);
+        }
     }
 
-    #[Route('/production/{id}', name: 'prod_id', methods:['GET'])]
+    #[Route('/production/{id}', name: 'prod_id', methods:['GET'])] #afficher un seul par Id
     public function getById($id): Response {
         $production = $this->documentManager->getRepository(Production::class)->find($id);  
         
@@ -66,8 +71,6 @@ class ApiController extends AbstractController
      $id = '657b7e76627aa8242e343500';
 
         $station = $this->documentManager->getRepository(Production::class)->find($id);
-        // génère une erreur pas assez de mémoire sur le serveur
-        // $prix = $this->documentManager->getRepository(Station::class)->findAll();
 
         return $this->json($station);
     }
@@ -87,7 +90,6 @@ class ApiController extends AbstractController
      #[Route('/hello', name: 'hello', methods:['GET'])]
      public function sayHello(Request $request): Response
      {
-        # $data = ['message' => 'hello '.$name];
         $name = $request->get('name') ?? 'Symfony';
         $data = Salutation::of('Hello '.$name);
         # return new JsonResponse($data, 200, [], true);
